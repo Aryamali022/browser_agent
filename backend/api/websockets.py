@@ -111,7 +111,13 @@ class AgentConnection:
 
 @router.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket,
-                             client_id: str = Query("anonymous")):
+                             client_id: str = Query("anonymous"),
+                             token: str = Query("")):
+    # Reject connections without the shared token when one is configured.
+    if settings.AGENT_TOKEN and token != settings.AGENT_TOKEN:
+        await websocket.close(code=1008)  # policy violation
+        logger.warning("Rejected WS connection: bad/missing token (client %s)", client_id)
+        return
     await websocket.accept()
     user_id = memory.get_or_create_user(client_id)
     session_id = memory.create_session(user_id)

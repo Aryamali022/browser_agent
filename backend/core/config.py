@@ -10,6 +10,13 @@ class Settings(BaseSettings):
     # SQLite is no longer supported (see core/database.py).
     DATABASE_URL: str = ""
 
+    # Shared secret the extension must send (?token=...) to open the WebSocket.
+    # Empty = no auth (fine for local dev). Set it in production so a public URL
+    # can't be used by strangers to run up the LLM bill. NOTE: this token is
+    # baked into the distributed extension build, so it deters casual/bot abuse
+    # but is not a per-user secret.
+    AGENT_TOKEN: str = ""
+
     # LLM provider selection: "nvidia" | "openai" | "gemini"
     LLM_PROVIDER: str = "nvidia"
     # 70B follows the plan-format rules and reasons through complex sites
