@@ -1,0 +1,22 @@
+# Render Blueprint for the Browser Agent backend.
+# Render → New → Blueprint → pick this repo. It reads this file.
+# The three secret env vars below are marked sync:false, so Render will
+# prompt you to enter them in the dashboard (they are never committed).
+services:
+  - type: web
+    name: browser-agent-backend
+    runtime: python
+    rootDir: backend
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: NVIDIA_API_KEY
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      - key: AGENT_TOKEN
+        sync: false

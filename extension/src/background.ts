@@ -3,7 +3,10 @@
 // execution (tab/navigation tools here, DOM tools to the content script)
 // and relays everything else to the side panel.
 
-const WS_URL = 'ws://localhost:8000/ws';
+// Set at build time via extension/.env* (VITE_WS_URL, VITE_AGENT_TOKEN).
+// Defaults target a local backend so `npm run dev` works with no config.
+const WS_URL = import.meta.env.VITE_WS_URL || 'ws://localhost:8000/ws';
+const AGENT_TOKEN = import.meta.env.VITE_AGENT_TOKEN || '';
 const NAV_TIMEOUT_MS = 15000;
 const SETTLE_MS = 600;
 
@@ -217,7 +220,9 @@ async function executeTool(id: string, tool: string, args: Record<string, unknow
 
 function connectWebSocket() {
   getClientId().then(cid => {
-    websocket = new WebSocket(`${WS_URL}?client_id=${encodeURIComponent(cid)}`);
+    const params = new URLSearchParams({ client_id: cid });
+    if (AGENT_TOKEN) params.set('token', AGENT_TOKEN);
+    websocket = new WebSocket(`${WS_URL}?${params.toString()}`);
 
     websocket.onopen = () => {
       connected = true;

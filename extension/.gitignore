@@ -12,6 +12,11 @@ dist
 dist-ssr
 *.local
 
+# Build-time env (may hold the backend URL + shared token) — keep examples
+.env
+.env.*
+!.env.*.example
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
